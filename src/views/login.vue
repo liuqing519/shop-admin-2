@@ -69,12 +69,12 @@ export default {
             data: this.form
           }).then( ({data: {data, meta}}) => {
             if (meta.status === 200) {
-              // console.log(data)
+              console.log(data)
               // 登录成功就跳转到home页, 这是服务端会返回token
               // 把token存到本地, 用来下次进来时判断有没有登录
               localStorage.setItem('token',data.token)
               // 
-              // console.log(this.$router)
+              console.log(this)
               this.$router.push('/home')
 
             }
