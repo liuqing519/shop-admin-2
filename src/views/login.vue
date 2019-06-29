@@ -1,6 +1,6 @@
 <template>
   <el-row type="flex" class="row-bg" justify="center" align="middle">
-    <el-col :xs="8" :sm="10" :md="12" :lg="14" :xl="16">
+    <el-col :xs="6" :sm="8" :md="10" :lg="12" :xl="14">
       <el-form
         ref="form"
         :model="form"
