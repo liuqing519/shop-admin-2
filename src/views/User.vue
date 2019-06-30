@@ -1,5 +1,22 @@
 <template>
-  <div>
+  <div class="main">
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+    </el-breadcrumb>
+
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <el-input placeholder="请输入搜索内容" class="input-with-select">
+          <el-button slot="append" icon="el-icon-search"></el-button>
+        </el-input>
+      </el-col>
+      <el-col :span="8">
+        <el-button type="success" plain>添加用户</el-button>
+      </el-col>
+    </el-row>
+
     <el-table :data="tableList" stripe style="width: 100%">
       <el-table-column prop="username" label="姓名" width="180"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
@@ -8,7 +25,12 @@
         <!-- 作用域插槽 -->
         <template v-slot="{row}">
           <!-- {{row}} -->
-          <el-switch v-model="row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+          <el-switch
+            v-model="row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="toggleState(row)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -42,25 +64,12 @@ export default {
     };
   },
   created() {
-    // axios({
-    //   url: 'http://localhost:8888/api/private/v1/users',
-    //   params: {
-    //     pagenum: 1,
-    //     pagesize: 5
-    //   },
-    //   headers: {
-    //     "Authorization": localStorage.getItem('token')
-    //   }
-    // }).then( ({data: {data, meta}}) => {
-    //   this.tableList = data.users
-    // })
-
     this.getUserList();
   },
   methods: {
     onPageChange(page) {
-      this.currentPage = page
-      this.getUserList()
+      this.currentPage = page;
+      this.getUserList();
     },
     async getUserList() {
       let res = await axios({
@@ -73,10 +82,40 @@ export default {
           Authorization: localStorage.getItem("token")
         }
       });
-
+      // console.log(res);
       this.tableList = res.data.data.users;
       this.total = res.data.data.total;
+    },
+    toggleState(user) {
+      console.log(user);
+      axios({
+        url: `http://localhost:8888/api/private/v1/users/${user.id}/state/${user.mg_state}`,
+        method: "put",
+        headers: {
+          Authorization: localStorage.getItem("token")
+        }
+      }).then(res => {
+        if (res.data.meta.status === 200) {
+          this.$message({
+            message: "恭喜你，状态修改成功",
+            type: "success"
+          });
+        }
+      });
     }
   }
 };
 </script>
+
+<style>
+.el-main {
+  background-color: #eaeef1;
+}
+.main .el-breadcrumb {
+  height: 50px;
+  background-color: #d4dae0;
+  line-height: 50px;
+  font-size: 16px;
+  padding-left: 10px;
+}
+</style>
