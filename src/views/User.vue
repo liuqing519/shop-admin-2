@@ -28,8 +28,21 @@ export default {
       ]
     };
   },
-  created() {
-    axios({
+  async created() {
+    // axios({
+    //   url: 'http://localhost:8888/api/private/v1/users',
+    //   params: {
+    //     pagenum: 1,
+    //     pagesize: 5
+    //   },
+    //   headers: {
+    //     "Authorization": localStorage.getItem('token')
+    //   }
+    // }).then( ({data: {data, meta}}) => {
+    //   this.tableList = data.users
+    // })
+
+    let result = await axios({
       url: 'http://localhost:8888/api/private/v1/users',
       params: {
         pagenum: 1,
@@ -38,9 +51,9 @@ export default {
       headers: {
         "Authorization": localStorage.getItem('token')
       }
-    }).then( ({data: {data, meta}}) => {
-      this.tableList = data.users
     })
+    // console.log(result)
+    this.tableList = result.data.data.users
   }
 };
 </script>
