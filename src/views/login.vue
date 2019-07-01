@@ -28,7 +28,7 @@
 <script>
 
 // login页面要用所有在login引入
-import axios from 'axios'
+// import axios from 'axios'  已经把axios加到了vue的原型上 这里就不需要引入了
 
 export default {
   data() {
@@ -63,8 +63,8 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          axios({
-            url: 'http://localhost:8888/api/private/v1/login',
+          this.$http({
+            url: 'login',
             method: 'post',
             data: this.form
           }).then( ({data: {data, meta}}) => {

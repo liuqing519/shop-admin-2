@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
 export default {
   data() {
     return {
@@ -171,81 +171,59 @@ export default {
     this.getUserList();
   },
   methods: {
-    onPageChange(page) {
-      this.currentPage = page;
-      this.getUserList();
-    },
     async getUserList() {
-      let res = await axios({
-        url: "http://localhost:8888/api/private/v1/users",
-        params: {
-          pagenum: this.currentPage,
-          pagesize: this.pagesize
-        },
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
-      });
-      // console.log(res);
-      this.tableList = res.data.data.users;
-      this.total = res.data.data.total;
-    },
-    toggleState(user) {
-      // console.log(user);
-      axios({
-        url: `http://localhost:8888/api/private/v1/users/${user.id}/state/${user.mg_state}`,
-        method: "put",
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
-      }).then(res => {
-        if (res.data.meta.status === 200) {
-          this.$message({
-            message: "恭喜你，状态修改成功",
-            type: "success",
-            duration: 1000
-          });
-        }
-      });
-    },
-    async search() {
-      let res = await axios({
-        url: `http://localhost:8888/api/private/v1/users`,
+      let res = await this.$http({
+        url: "users",
         params: {
           query: this.query,
           pagenum: this.currentPage,
           pagesize: this.pagesize
         },
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
       });
       this.tableList = res.data.data.users;
       this.total = res.data.data.total;
+    },
+    async toggleState(user) {
+      let res = await this.$http({
+        url: `users/${user.id}/state/${user.mg_state}`,
+        method: "put",
+      })
+      if (res.data.meta.status === 200) {
+        this.$message({
+          message: "恭喜你，状态修改成功",
+          type: "success",
+          duration: 1000
+        });
+      }
+    },
+    async search() {
+      // 上面getUserList中发送请求是已经把query拼进去了 所以这里
+      // 只需要重新请求即可
+      this.getUserList()
+    },
+    onPageChange(page) {
+      this.currentPage = page;
+      this.getUserList();
     },
     addUser() {
       this.dialogFormVisibleAdd = true;
     },
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          axios({
-            url: "http://localhost:8888/api/private/v1/users",
-            method: "post",
-            data: this.ruleForm,
-            headers: {
-              Authorization: localStorage.getItem("token")
-            }
-          }).then(res => {
-            this.getUserList();
-            this.dialogFormVisibleAdd = false;
-            // this.ruleForm = ''
-          });
-        } else {
-          // console.log("error submit!!");
-          return false;
-        }
-      });
+      this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$http({
+              url: "users",
+              method: "post",
+              data: this.ruleForm
+            }).then( res => {
+              this.getUserList();
+              this.dialogFormVisibleAdd = false;
+            })
+          } else {
+            return false;
+          }
+        })
+     
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -255,24 +233,18 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(() => {
+      }).then(() => {
           this.$message({
             type: "success",
             message: "删除成功!"
           });
-          axios({
-            url: `http://localhost:8888/api/private/v1/users/${id}`,
+          this.$http({
+            url: `users/${id}`,
             method: "delete",
-            headers: {
-              Authorization: localStorage.getItem("token")
-            }
           }).then(res => {
-            // console.log(res )
             this.getUserList();
           });
-        })
-        .catch(() => {
+        }).catch(() => {
           this.$message({
             type: "info",
             message: "已取消删除"
@@ -281,41 +253,34 @@ export default {
     },
     async editUser(id) {
       this.dialogFormVisibleRdit = true;
-      let res = await axios({
-        url: `http://localhost:8888/api/private/v1/users/${id}`,
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
+      let res = await this.$http({
+        url: `users/${id}`,
       });
       this.editForm = res.data.data;
     },
     submitEditUser(editform) {
-      // console.log(editform)
       this.$refs[editform].validate(valid => {
         if (valid) {
-          axios({
-            url: `http://localhost:8888/api/private/v1/users/${this.editForm.id}`,
+          this.$http({
+            url: `users/${this.editForm.id}`,
             data: {
               email: this.editForm.email,
               mobile: this.editForm.mobile
             },
-            method: 'put',
-            headers: {
-              Authorization: localStorage.getItem("token")
-            }
-          }).then( res => {
-            console.log(res)
+            method: "put",
+          }).then(res => {
+            console.log(res);
             // 1. 提示用户编辑成功
             this.$message({
-              message: '恭喜你，用户信息编辑成功',
-              type: 'success',
+              message: "恭喜你，用户信息编辑成功",
+              type: "success",
               duration: 1000
-            })
+            });
             // 2. 刷新页面
-            this.getUserList()
+            this.getUserList();
             // 3. 隐藏模态框
-            this.dialogFormVisibleRdit = false
-          })
+            this.dialogFormVisibleRdit = false;
+          });
         } else {
           console.log("error submit!!");
           return false;
