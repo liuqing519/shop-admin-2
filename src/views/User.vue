@@ -22,7 +22,8 @@
       </el-col>
     </el-row>
 
-    <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
+    <!-- 添加用户模态框 -->
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisibleAdd">
       <el-form :model="ruleForm" label-width="100px" :rules="rules" ref="ruleForm">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="ruleForm.username" auto-complete="off"></el-input>
@@ -60,11 +61,39 @@
         </template>
       </el-table-column>
       <el-table-column label="操作">
-        <el-button type="primary" icon="el-icon-edit" plain size="mini"></el-button>
-        <el-button type="danger" icon="el-icon-delete" plain size="mini"></el-button>
-        <el-button type="success" icon="el-icon-check" plain size="mini">分配角色</el-button>
+        <template v-slot="{row}">
+          <!-- {{row}} -->
+          <el-button type="primary" icon="el-icon-edit" plain size="mini" @click="editUser(row.id)"></el-button>
+          <el-button type="danger" icon="el-icon-delete" plain size="mini" @click="delUser(row.id)"></el-button>
+          <el-button type="success" icon="el-icon-check" plain size="mini">分配角色</el-button>
+        </template>
       </el-table-column>
     </el-table>
+
+    <!-- 用户编辑模态框 -->
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleRdit">
+      <el-form :model="editForm" :rules="rules" ref="editForm" label-width="100px">
+        <el-form-item label="用户名" prop="username">
+          <el-button
+            type="info"
+            plain
+            disabled
+            size="small"
+            v-model="editForm.username"
+          >{{editForm.username}}</el-button>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input auto-complete="off" v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input auto-complete="off" v-model="editForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleRdit = false">取 消</el-button>
+        <el-button type="primary" @click="submitEditUser('editForm')">确 定</el-button>
+      </div>
+    </el-dialog>
 
     <!-- 分页器 -->
     <el-pagination
@@ -88,7 +117,14 @@ export default {
       pagesize: 3,
       currentPage: 1,
       query: "",
-      dialogFormVisible: false,
+      dialogFormVisibleAdd: false,
+      dialogFormVisibleRdit: false,
+      editForm: {
+        id: 0,
+        username: "",
+        email: "",
+        mobile: ""
+      },
       ruleForm: {
         username: "",
         password: "",
@@ -188,31 +224,103 @@ export default {
       this.total = res.data.data.total;
     },
     addUser() {
-      this.dialogFormVisible = true;
+      this.dialogFormVisibleAdd = true;
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           axios({
-            url: 'http://localhost:8888/api/private/v1/users',
-            method: 'post',
+            url: "http://localhost:8888/api/private/v1/users",
+            method: "post",
             data: this.ruleForm,
             headers: {
               Authorization: localStorage.getItem("token")
             }
-          }).then( res => {
-            this.getUserList()
-            this.dialogFormVisible = false
+          }).then(res => {
+            this.getUserList();
+            this.dialogFormVisibleAdd = false;
             // this.ruleForm = ''
-          })
+          });
         } else {
-          console.log("error submit!!");
+          // console.log("error submit!!");
           return false;
         }
       });
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+    },
+    delUser(id) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+          axios({
+            url: `http://localhost:8888/api/private/v1/users/${id}`,
+            method: "delete",
+            headers: {
+              Authorization: localStorage.getItem("token")
+            }
+          }).then(res => {
+            // console.log(res )
+            this.getUserList();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    async editUser(id) {
+      this.dialogFormVisibleRdit = true;
+      let res = await axios({
+        url: `http://localhost:8888/api/private/v1/users/${id}`,
+        headers: {
+          Authorization: localStorage.getItem("token")
+        }
+      });
+      this.editForm = res.data.data;
+    },
+    submitEditUser(editform) {
+      // console.log(editform)
+      this.$refs[editform].validate(valid => {
+        if (valid) {
+          axios({
+            url: `http://localhost:8888/api/private/v1/users/${this.editForm.id}`,
+            data: {
+              email: this.editForm.email,
+              mobile: this.editForm.mobile
+            },
+            method: 'put',
+            headers: {
+              Authorization: localStorage.getItem("token")
+            }
+          }).then( res => {
+            console.log(res)
+            // 1. 提示用户编辑成功
+            this.$message({
+              message: '恭喜你，用户信息编辑成功',
+              type: 'success',
+              duration: 1000
+            })
+            // 2. 刷新页面
+            this.getUserList()
+            // 3. 隐藏模态框
+            this.dialogFormVisibleRdit = false
+          })
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     }
   }
 };
