@@ -8,6 +8,7 @@ export default {
       query: "",
       dialogFormVisibleAdd: false,
       dialogFormVisibleRdit: false,
+      dialogFormVisibleTask: false,
       editForm: {
         id: 0,
         username: "",
@@ -20,6 +21,11 @@ export default {
         email: "",
         mobile: ""
       },
+      taseForm: {
+        username: '',
+        rid: '',
+      },
+      rolesList: [],
       rules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
@@ -69,7 +75,7 @@ export default {
           pagesize: this.pagesize
         },
       });
-      console.log(res)
+      // console.log(res)
       this.tableList = res.data.data.users;
       this.total = res.data.data.total;
     },
@@ -161,7 +167,7 @@ export default {
             },
             method: "put",
           }).then(res => {
-            console.log(res);
+            // console.log(res);
             // 1. 提示用户编辑成功
             this.$message({
               message: "恭喜你，用户信息编辑成功",
@@ -174,10 +180,44 @@ export default {
             this.dialogFormVisibleRdit = false;
           });
         } else {
-          console.log("error submit!!");
+          // console.log("error submit!!");
           return false;
         }
       });
+    },
+    async taseUser(row) {
+      this.dialogFormVisibleTask = true
+      let res = await this.$http({
+        url: `users/${row.id}`
+      })
+      // console.log(res)
+      // this.taseForm.username = res.data.data.username
+      // this.taseForm.rid = res.data.data.rid
+      this.taseForm = res.data.data
+
+      // 获取角色列表
+      let roleResult = await this.$http({
+        url: 'roles'
+      })
+      // console.log(roleResult)
+      this.rolesList = roleResult.data.data
+      // console.log(this.rolesList)
+    },
+    async taskRole() {
+      // console.log(this.taseForm.id)
+      let res = await this.$http({
+        url: `users/${this.taseForm.id}/role`,
+        method: 'put',
+        data: {
+          rid: this.taseForm.rid
+        }
+      })
+      this.$message({
+        message: "设置角色成功",
+        type: "success",
+        duration: 1000
+      })
+      this.dialogFormVisibleTask = false
     }
   }
 };

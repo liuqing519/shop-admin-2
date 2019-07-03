@@ -55,10 +55,28 @@
         <!-- {{row}} -->
         <el-button type="primary" icon="el-icon-edit" plain size="mini" @click="editUser(row.id)"></el-button>
         <el-button type="danger" icon="el-icon-delete" plain size="mini" @click="delUser(row.id)"></el-button>
-        <el-button type="success" icon="el-icon-check" plain size="mini">分配角色</el-button>
+        <el-button type="success" icon="el-icon-check" plain size="mini" @click='taseUser(row)'>分配角色</el-button>
       </template>
     </el-table-column>
   </el-table>
+
+  <!-- 分配角色模态框 -->
+  <el-dialog title="分配角色" :visible.sync="dialogFormVisibleTask">
+    <el-form :model="taseForm" label-width="100px">
+      <el-form-item label="用户名" prop="username">
+        <el-button type="info" plain disabled size="small" v-model="taseForm.username">{{taseForm.username}}</el-button>
+      </el-form-item>
+      <el-form-item label="角色列表">
+      <el-select placeholder="请选择角色" v-model='taseForm.rid'>
+        <el-option v-for='item in rolesList' :key='item.id' :value='item.id' :label='item.roleName'></el-option>
+      </el-select>
+    </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogFormVisibleTask = false">取 消</el-button>
+      <el-button type="primary" @click='taskRole'>确 定</el-button>
+    </div>
+  </el-dialog>
 
   <!-- 用户编辑模态框 -->
   <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleRdit">
