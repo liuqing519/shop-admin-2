@@ -3,12 +3,29 @@ import App from "./App.vue";
 import router from "./router";
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+// 引入axios
+import axios from 'axios'
 
 import './assets/index.css'
 
 Vue.config.productionTip = false;
 
 Vue.use(ElementUI)
+
+// 把axios加到vue的原型上, 这样就不用每个要用到axios的页面都要引入了
+// $http 是行业内的默认叫法 名字可以随便取
+Vue.prototype.$http = axios
+
+// 给axios添加一个默认的基路径
+axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
+
+// 设置axios的请求拦截器
+  
+axios.interceptors.request.use(function(config) {
+  // config就是请求时拦截到的所有相关信息
+  config.headers.Authorization = localStorage.getItem("token")
+     return config;
+})
 
 // 注册导航守卫
 router.beforeEach( (to,from,next) => {

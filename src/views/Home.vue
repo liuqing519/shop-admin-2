@@ -4,7 +4,7 @@
       <el-row type="flex" class="row-bg" justify="space-between" align="middle">
         <el-col :span="6">
           <div class="grid-content bg-purple">
-            <img src="../assets/logo.png" alt="">
+            <img src="../assets/logo.png" alt />
           </div>
         </el-col>
         <el-col>
@@ -16,7 +16,7 @@
           <div class="grid-content bg-purple">
             <div>
               欢迎39期星耀会员
-              <a href="#">退出</a>
+              <a href="javacript:;" @click="logout">退出</a>
             </div>
           </div>
         </el-col>
@@ -32,72 +32,70 @@
               background-color="#545c64"
               text-color="#fff"
               active-text-color="#ffd04b"
-              :router='true'
-              :unique-opened='true'
+              :router="true"
+              :unique-opened="true"
             >
               <el-submenu index="1">
                 <template slot="title">
                   <i class="el-icon-location"></i>
                   <span>用户管理</span>
                 </template>
-                  <el-menu-item index="/user">
-                    <i class="el-icon-menu"></i>
-                    <span>用户管理</span>
-                  </el-menu-item>
+                <el-menu-item index="/user">
+                  <i class="el-icon-menu"></i>
+                  <span>用户管理</span>
+                </el-menu-item>
               </el-submenu>
               <el-submenu index="2">
                 <template slot="title">
                   <i class="el-icon-location"></i>
                   <span>权限管理</span>
                 </template>
-                  <el-menu-item index="1-1">
-                    <i class="el-icon-menu"></i>
-                    <span>角色列表</span>
-                  </el-menu-item>
-                  <el-menu-item index="1-2">
-                    <i class="el-icon-menu"></i>
-                    <span>权限列表</span>
-                  </el-menu-item>
+                <el-menu-item index="1-1">
+                  <i class="el-icon-menu"></i>
+                  <span>角色列表</span>
+                </el-menu-item>
+                <el-menu-item index="1-2">
+                  <i class="el-icon-menu"></i>
+                  <span>权限列表</span>
+                </el-menu-item>
               </el-submenu>
               <el-submenu index="3">
                 <template slot="title">
                   <i class="el-icon-location"></i>
                   <span>商品管理</span>
                 </template>
-                  <el-menu-item index="1-1">
-                    <i class="el-icon-menu"></i>
-                    <span>商品列表</span>
-                  </el-menu-item>
-                  <el-menu-item index="1-2">
-                    <i class="el-icon-menu"></i>
-                    <span>分类参数</span>
-                  </el-menu-item>
-                  <el-menu-item index="1-3">
-                    <i class="el-icon-menu"></i>
-                    <span>商品分类</span>
-                  </el-menu-item>
+                <el-menu-item index="1-1">
+                  <i class="el-icon-menu"></i>
+                  <span>商品列表</span>
+                </el-menu-item>
+                <el-menu-item index="1-2">
+                  <i class="el-icon-menu"></i>
+                  <span>分类参数</span>
+                </el-menu-item>
+                <el-menu-item index="1-3">
+                  <i class="el-icon-menu"></i>
+                  <span>商品分类</span>
+                </el-menu-item>
               </el-submenu>
               <el-submenu index="4">
                 <template slot="title">
                   <i class="el-icon-location"></i>
                   <span>订单管理</span>
                 </template>
-                  <el-menu-item index="1-1">
-                    <i class="el-icon-menu"></i>
-                    <span>订单列表</span>
-                  </el-menu-item>
-                
+                <el-menu-item index="1-1">
+                  <i class="el-icon-menu"></i>
+                  <span>订单列表</span>
+                </el-menu-item>
               </el-submenu>
               <el-submenu index="5">
                 <template slot="title">
                   <i class="el-icon-location"></i>
                   <span>数据统计</span>
                 </template>
-                  <el-menu-item index="1-1">
-                    <i class="el-icon-menu"></i>
-                    <span>数据列表</span>
-                  </el-menu-item>
-                
+                <el-menu-item index="1-1">
+                  <i class="el-icon-menu"></i>
+                  <span>数据列表</span>
+                </el-menu-item>
               </el-submenu>
             </el-menu>
           </el-col>
@@ -112,7 +110,27 @@
 
 <script>
 export default {
-}
+  methods: {
+    logout() {
+      console.log("hahha");
+      this.$confirm("确定退出登录吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          localStorage.removeItem("token");
+          this.$router.push('/login')
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消退出"
+          });
+        });
+    }
+  }
+};
 </script>
 
 
@@ -127,7 +145,7 @@ export default {
 }
 
 .el-container .el-header {
-  background-color: #B3C1CD;
+  background-color: #b3c1cd;
   padding: 0;
 }
 .el-container .el-header img {
