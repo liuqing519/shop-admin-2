@@ -5,7 +5,7 @@
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品列表</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-button type="success" plain class="add">添加商品</el-button>
+    <el-button type="success" plain class="add" @click="addGood">添加商品</el-button>
     <el-table :data="goodsList" highlight-current-row style="width: 100%" stripe>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column property="goods_name" label="商品名称"></el-table-column>
@@ -54,6 +54,9 @@ export default {
     changePage(currentPage) {
       this.pagenum = currentPage;
       this.getGoodsList();
+    },
+    addGood() {
+      this.$router.push('./goods-add')
     }
   },
   created() {
