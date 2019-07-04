@@ -68,12 +68,12 @@ export default {
     let res = await this.$http({
       url: 'menus'
     })
-    console.log(res)
+    // console.log(res)
     this.menuList = res.data.data
   },
   methods: {
     logout() {
-      console.log("hahha");
+      // console.log("hahha");
       this.$confirm("确定退出登录吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
