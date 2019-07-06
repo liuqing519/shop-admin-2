@@ -52,10 +52,10 @@
     <!-- 添加分类的模态框 -->
     <el-dialog title="添加分类" :visible.sync="dialogFormVisible">
       <el-form label-width="100px" :model='addCateFormData' ref="addCateForm">
-        <el-form-item label="分类名称">
+        <el-form-item label="分类名称" prop='cat_name'>
           <el-input auto-complete="off" v-model="addCateFormData.cat_name"></el-input>
         </el-form-item>
-        <el-form-item label="父级名称">
+        <el-form-item label="父级名称" prop='catArr'>
           <el-cascader :options="cateOptions" :props='defaultProps' v-model="addCateFormData.parentArr"></el-cascader>
         </el-form-item>
       </el-form>
@@ -147,7 +147,7 @@ export default {
           cat_pid: cat_pid
         }
       })
-      console.log(res)
+      // console.log(res)
       if (res.data.meta.status === 201) {
         this.$message({
           type: 'success',
@@ -155,7 +155,7 @@ export default {
           duration: 1000
         })
         this.dialogFormVisible = false
-        // 重置表单
+        // 重置表单 resetFields必须配合prop一起使用 重置才会生效
         this.$refs.addCateForm.resetFields()
         // 刷新页面 重新获取数据
         this.getCategoriesList()

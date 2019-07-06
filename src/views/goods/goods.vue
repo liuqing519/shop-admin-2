@@ -11,7 +11,11 @@
       <el-table-column property="goods_name" label="商品名称"></el-table-column>
       <el-table-column property="goods_price" label="商品价格"></el-table-column>
       <el-table-column property="goods_weight" label="商品重量"></el-table-column>
-      <el-table-column property="add_time" label="创建时间"></el-table-column>
+      <el-table-column label="创建时间">
+        <template v-slot='{row}'>
+          {{row.add_time | timeFilter}}
+        </template> 
+      </el-table-column>
       <el-table-column label="操作">
         <el-button type="primary" icon="el-icon-edit" plain size="mini"></el-button>
         <el-button type="danger" icon="el-icon-delete" plain size="mini"></el-button>
@@ -29,6 +33,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   data() {
     return {
@@ -37,6 +43,11 @@ export default {
       pagesize: 6,
       total: 0
     };
+  },
+  filters: {
+    timeFilter(value) {
+      return moment.unix(value).format('YYYY-MM-DD HH-mm-ss')
+    }
   },
   methods: {
     async getGoodsList() {
@@ -60,6 +71,7 @@ export default {
     }
   },
   created() {
+    // console.log(moment.unix(1318781876).format('YYYY-MM-DD HH-mm-ss'))
     this.getGoodsList();
   }
 };
