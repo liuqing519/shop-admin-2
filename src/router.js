@@ -1,13 +1,16 @@
 import Vue from "vue";
 import Router from "vue-router";
+
 import Login from "./views/login"
-import Home from "./views/Home"
-import User from "./views/user/User.vue"
-import Rights from "./views/rights/rights"
-import roles from "./views/roles/roles"
-import goods from "./views/goods/goods"
-import categories from "./views/categories/categories"
-import goodsAdd from "./views/goods/goodsAdd"
+
+// import Home from "./views/Home"
+const Home = () => import(/* webpackChunkName: 'one' */"./views/Home")
+const User = () => import(/* webpackChunkName: 'one' */"./views/user/User.vue")
+const Rights = () => import(/* webpackChunkName: 'one' */"./views/rights/rights")
+const roles = () => import(/* webpackChunkName: 'one' */"./views/roles/roles")
+const goods = () => import(/* webpackChunkName: 'two' */"./views/goods/goods")
+const categories = () => import(/* webpackChunkName: 'two' */"./views/categories/categories")
+const goodsAdd = () => import(/* webpackChunkName: 'two' */"./views/goods/goodsAdd")
 
 Vue.use(Router);
 
